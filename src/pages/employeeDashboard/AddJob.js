@@ -1,9 +1,16 @@
 import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { FiTrash } from "react-icons/fi";
+import { useDispatch, useSelector } from "react-redux";
+import { useAddJobMutation } from "../../features/jobs/jobApi";
 
 const AddJob = () => {
-  const { handleSubmit, register, control } = useForm();
+  const {user : {companyName}} = useSelector(state => state.auth)
+  const { handleSubmit, register, control, reset } = useForm({
+    defaultValues : {
+      companyName
+    }
+  });
   const {
     fields: resFields,
     append: resAppend,
@@ -20,8 +27,14 @@ const AddJob = () => {
     remove: reqRemove,
   } = useFieldArray({ control, name: "requirements" });
 
+  const [postJob, {isLoading, isError}] = useAddJobMutation()
+  const dispatch = useDispatch()
+
+
   const onSubmit = (data) => {
     console.log(data);
+    dispatch(postJob(data))
+    reset()
   };
 
   return (
